@@ -1,4 +1,4 @@
-package puppiesandponies.cutcounter;
+package puppiesandponies.exploratory.cutcounter;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Objects;
@@ -153,8 +153,8 @@ public class Count {
             }
         }
 
-        printDistribution(aCount, "user.dist.csv");
-        printDistribution(bCount, "item.dist.csv");
+        printDistribution(aCount, "cutounter-user.dist.csv");
+        printDistribution(bCount, "cutounter-item.dist.csv");
     }
 
     /**

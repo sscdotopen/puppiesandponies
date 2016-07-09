@@ -1,6 +1,5 @@
 DBLP          http://konect.uni-koblenz.de/networks/dblp_coauthor
 lastfm        http://konect.uni-koblenz.de/networks/lastfm_band
-movielens10m  http://konect.uni-koblenz.de/networks/movielens-10m_rating
 orkut         http://konect.uni-koblenz.de/networks/orkut-groupmemberships
 stackoverflow http://konect.uni-koblenz.de/networks/stackexchange-stackoverflow
 1m songs      https://s3-us-west-1.amazonaws.com/mlt-lab-data-master/data/log-1M/log-0000 - log-0013 (requires preprocessing)

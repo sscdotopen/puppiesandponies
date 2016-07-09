@@ -5,64 +5,28 @@ import java.util.zip.GZIPInputStream
 
 import scala.io.Source
 
-trait InteractionStream {
+trait Dataset {
 
   def name(): String
 
   def inTemporalOrder(): Boolean
 
   def interactions(): TraversableOnce[Interaction]
+
+  def numUsers: Int = -1
+  def numItems: Int = -1
 }
 
-object InteractionStreams {
-  val ALL_STREAMS = Array(Movielens1MInteractionStream, Movielens10MInteractionStream, LastfmInteractionStream,
-    DBLPInteractionStream, StackoverflowInteractionStream, MillionSongsInteractionStream, OrkutInteractionStream,
-    YahooMusicInteractionStream)
+object Datasets {
+  val ALL = Array(LastfmBandListeningsDataset, DBLPCoAuthorDataset, StackoverflowFavoritesDataset,
+    MillionSongsInteractionStream, OrkutInteractionStream, YahooMusicInteractionStream)
 }
 
-object Movielens1MInteractionStream extends InteractionStream {
-
-  override def name(): String = "movielens1M"
-
-  override def inTemporalOrder(): Boolean = true
-
-  override def interactions(): TraversableOnce[Interaction] = {
-    Source
-      .fromFile(s"${Config.datasetDir}/movielens1M/ratings.dat")
-      .getLines
-      .map { line =>
-        val tokens = line.split("::")
-        Interaction(tokens(0).toInt, tokens(1).toInt, tokens(3).toLong * 1000)
-      }
-      .toArray
-      .sortBy { _.timestamp }
-  }
-}
-
-object Movielens10MInteractionStream extends InteractionStream {
-
-  override def name(): String = "movielens10M"
-
-  override def inTemporalOrder(): Boolean = true
-
-  override def interactions(): TraversableOnce[Interaction] = {
-    Source
-      .fromFile(s"${Config.datasetDir}/movielens-10m_rating/out.movielens-10m_rating")
-      .getLines
-      .filter { line => !line.startsWith("%") }
-      .map { line =>
-      val tokens = line.split(" ")
-      Interaction(tokens(0).toInt, tokens(1).toInt, tokens(3).toLong * 1000)
-    }
-      .toArray
-      .sortBy { _.timestamp }
-  }
-}
-
-object LastfmInteractionStream extends InteractionStream {
+object LastfmBandListeningsDataset extends Dataset {
 
   override def name(): String = "lastfm"
-
+  override def numUsers: Int = 992
+  override def numItems: Int = 174077
   override def inTemporalOrder(): Boolean = true
 
   override def interactions(): TraversableOnce[Interaction] = {
@@ -72,37 +36,57 @@ object LastfmInteractionStream extends InteractionStream {
       .filter { line => !line.startsWith("%") }
       .map { line =>
         val tokens = line.split(" ")
-        Interaction(tokens(0).toInt, tokens(1).toInt, tokens(3).toLong * 1000)
+        Interaction(tokens(0).toInt - 1, tokens(1).toInt - 1, tokens(3).toLong * 1000)
       }
       .toArray
       .sortBy { _.timestamp }
   }
 }
 
-object DBLPInteractionStream extends InteractionStream {
+object LogSynthInteractionStream extends Dataset {
+
+  override def name(): String = "synth"
+
+  override def inTemporalOrder(): Boolean = false
+
+  override def interactions(): TraversableOnce[Interaction] = {
+    Source
+      .fromFile(s"${Config.datasetDir}/synth/generated.csv")
+      .getLines
+      .filter { line => !line.startsWith("x1") }
+      .map { line =>
+        val tokens = line.split(",")
+        Interaction(tokens(0).toInt, tokens(1).toInt, 1L)
+      }
+  }
+}
+
+object DBLPCoAuthorDataset extends Dataset {
 
   override def name(): String = "dblp"
-
+  override def numUsers: Int = 1314050
+  override def numItems: Int = 1314050
   override def inTemporalOrder(): Boolean = true
 
   override def interactions(): TraversableOnce[Interaction] = {
     Source
-      .fromFile(s"${Config.datasetDir}/tedandme/dblp/out.dblp_coauthor")
+      .fromFile(s"${Config.datasetDir}/dblp/out.dblp_coauthor")
       .getLines
       .filter { line => !line.startsWith("%") }
       .map { line =>
         val tokens = line.split(" ")
-        Interaction(tokens(0).toInt, tokens(1).toInt, tokens(4).toLong * 1000)
+        Interaction(tokens(0).toInt - 1, tokens(1).toInt - 1, tokens(4).toLong * 1000)
       }
       .toArray
       .sortBy { _.timestamp }
   }
 }
 
-object StackoverflowInteractionStream extends InteractionStream {
+object StackoverflowFavoritesDataset extends Dataset {
 
   override def name(): String = "stackoverflow"
-
+  override def numUsers = 545196
+    override def numItems = 96678 + 2
   override def inTemporalOrder(): Boolean = true
 
   override def interactions(): TraversableOnce[Interaction] = {
@@ -112,12 +96,12 @@ object StackoverflowInteractionStream extends InteractionStream {
       .filter { line => !line.startsWith("%") }
       .map { line =>
       val tokens = line.split(" ")
-      Interaction(tokens(0).toInt, tokens(1).toInt, tokens(3).toLong * 1000)
+      Interaction(tokens(0).toInt - 1, tokens(1).toInt - 1, tokens(3).toLong * 1000)
     }
   }
 }
 
-object MillionSongsInteractionStream extends InteractionStream {
+object MillionSongsInteractionStream extends Dataset {
 
   override def name(): String = "millionsongs"
 
@@ -134,7 +118,7 @@ object MillionSongsInteractionStream extends InteractionStream {
   }
 }
 
-object OrkutInteractionStream extends InteractionStream {
+object OrkutInteractionStream extends Dataset {
 
   override def name(): String = "orkut"
 
@@ -152,7 +136,7 @@ object OrkutInteractionStream extends InteractionStream {
   }
 }
 
-object YahooMusicInteractionStream extends InteractionStream {
+object YahooMusicInteractionStream extends Dataset {
 
   override def name(): String = "yahoomusic"
 

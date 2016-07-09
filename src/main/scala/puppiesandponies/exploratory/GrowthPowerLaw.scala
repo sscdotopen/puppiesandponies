@@ -8,7 +8,7 @@ import puppiesandponies._
 
 object GrowthPowerLaw extends App {
 
-  val stream = DBLPInteractionStream//StackoverflowInteractionStream//LastfmInteractionStream//StackoverflowInteractionStream
+  val stream = DBLPCoAuthorDataset//StackoverflowInteractionStream//LastfmInteractionStream//StackoverflowInteractionStream
 
   assert(stream.inTemporalOrder())
 

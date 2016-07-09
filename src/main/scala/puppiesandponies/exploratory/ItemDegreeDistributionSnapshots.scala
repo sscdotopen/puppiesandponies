@@ -8,14 +8,22 @@ import puppiesandponies._
 
 object ItemDegreeDistributionSnapshots extends App {
 
-  val stream = StackoverflowInteractionStream
+  /*val stream = StackoverflowInteractionStream
   val interactions = stream.interactions.toArray
 
   storeDegreeDistribution(interactions, 100000, stream.name())
   storeDegreeDistribution(interactions, 250000, stream.name())
   storeDegreeDistribution(interactions, 500000, stream.name())
-  storeDegreeDistribution(interactions, 1000000, stream.name())
-  
+  storeDegreeDistribution(interactions, 1000000, stream.name())*/
+
+  val stream = DBLPCoAuthorDataset
+  val interactions = stream.interactions.toArray
+
+  storeDegreeDistribution(interactions, 5000000, stream.name())
+  storeDegreeDistribution(interactions, 10000000, stream.name())
+  storeDegreeDistribution(interactions, 15000000, stream.name())
+  storeDegreeDistribution(interactions, 18000000, stream.name())
+
   /*val stream = Movielens10MInteractionStream
   val interactions = stream.interactions.toArray
 

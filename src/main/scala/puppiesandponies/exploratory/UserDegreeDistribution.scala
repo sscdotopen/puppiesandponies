@@ -3,11 +3,11 @@ package puppiesandponies.exploratory
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 
-import puppiesandponies._
+import puppiesandponies.{Config, Dataset, LogSynthInteractionStream}
 
 import scala.collection.mutable
 
-object ItemDegreeDistribution extends App {
+object UserDegreeDistribution extends App {
 
   Array(LogSynthInteractionStream).foreach { stream =>
     degreeDistribution(stream)
@@ -17,18 +17,19 @@ object ItemDegreeDistribution extends App {
 
     println(s"Computing degree distribution of stream ${stream.name}")
 
-    var degreePerItem = mutable.Map[Int, Int]()
+    var degreePerUser = mutable.Map[Int, Int]()
 
     stream.interactions().foreach { interaction =>
-      val item = interaction.item
-      val degree = degreePerItem.getOrElse(item, 0)
-      degreePerItem.put(item, degree + 1)
+      val user = interaction.user
+      val degree = degreePerUser.getOrElse(user, 0)
+      degreePerUser.put(user, degree + 1)
     }
 
-    val degrees = degreePerItem.values.toArray.sorted
+    val degrees = degreePerUser.values.toArray.sorted
 
-    val file = s"${Config.statsDir}/${stream.name}_itemdegrees.tsv"
+    val file = s"${Config.statsDir}/${stream.name}_userdegrees.tsv"
 
     Files.write(Paths.get(file), degrees.mkString("\n").getBytes(StandardCharsets.UTF_8))
   }
+
 }
